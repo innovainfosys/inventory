@@ -18,8 +18,8 @@ return new class extends Migration
             $table->decimal('discount_amount', 8, 2);
             $table->decimal('paid_amount', 8, 2);
             $table->enum('status', ['pending', 'processing', 'completed', 'cancelled', 'refunded']);
-            $table->text('shipping_address')->default("");
-            $table->text('billing_address')->default("");
+            $table->text('shipping_address');
+            $table->text('billing_address');
             $table->string('payment_method')->nullable();
             $table->boolean('is_paid')->default(false);
 
@@ -30,7 +30,28 @@ return new class extends Migration
             $table->softDeletes();
             $table->timestamps();
         });
+
+
+        Schema::create('order_items', function (Blueprint $table) {
+            $table->id();
+            $table->unsignedBigInteger("order_id");
+            $table->unsignedBigInteger("product_id");
+
+            $table->foreign("order_id")
+                ->references("id")
+                ->on("orders");
+
+            $table->foreign("product_id")
+                ->references("id")
+                ->on("products");
+
+            $table->softDeletes();
+
+            $table->timestamps();
+        });
     }
+
+
 
     /**
      * Reverse the migrations.
@@ -38,5 +59,6 @@ return new class extends Migration
     public function down(): void
     {
         Schema::dropIfExists('orders');
+        Schema::dropIfExists('order_items');
     }
 };

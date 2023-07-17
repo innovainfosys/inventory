@@ -3,6 +3,8 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Models\Cart\Cart;
+use App\Models\Order\Order;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -42,4 +44,31 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+
+
+    public function cart()
+    {
+        return $this->hasOne(Cart::class);
+    }
+
+    public function orders()
+    {
+        return $this->hasMany(Order::class);
+    }
+
+
+    public function getIsAdminAttribute(): bool
+    {
+        return $this->user_type == 1;
+    }
+
+    public function getIsCustomerAttribute(): bool
+    {
+        return $this->user_type == 2;
+    }
+
+    public static function customers()
+    {
+        return User::where("user_type", 2)->get();
+    }
 }
